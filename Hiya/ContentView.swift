@@ -17,34 +17,49 @@ struct ContentView: View {
 	private var session = LanguageModelSession()
 	
 	@State private var response: String = ""
-
+	@State private var isLoading: Bool = false
+	
 	
 	// MARK: - body
 	
-    var body: some View {
-        VStack {
+	var body: some View {
+		VStack {
 			Spacer()
 			
 			switch largeLanguageModel.availability {
-				case .available:
+			case .available:
+				
+				if isLoading {
+					ProgressView()
+					
+				} else if response.isEmpty {
+					Text("Tap the button to get a fun response")
+						.foregroundStyle(.tertiary)
+						.multilineTextAlignment(.center)
+						.font(.title)
+					
+				} else {
 					Text(response)
-					.multilineTextAlignment(.center)
-					.font(.largeTitle)
-					.bold()
-				case .unavailable(.deviceNotEligible) :
-					Text("Unavailable: Your device isn't eligible for Apple Inteligence.")
-				case .unavailable(.appleIntelligenceNotEnabled) :
-					Text("Unavailable: Please enable Apple Intelligence in Settings")
-				case .unavailable(.modelNotReady) :
-					Text("Unavailable: The AI model isn't ready")
-				case .unavailable(let reason):
-					Text("Unavailable: The AI feature is unavailable for an unknown reason: \(String(describing: reason))")
+						.multilineTextAlignment(.center)
+						.font(.largeTitle)
+						.bold()
+				}
+			case .unavailable(.deviceNotEligible) :
+				Text("Unavailable: Your device isn't eligible for Apple Inteligence.")
+			case .unavailable(.appleIntelligenceNotEnabled) :
+				Text("Unavailable: Please enable Apple Intelligence in Settings")
+			case .unavailable(.modelNotReady) :
+				Text("Unavailable: The AI model isn't ready")
+			case .unavailable(let reason):
+				Text("Unavailable: The AI feature is unavailable for an unknown reason: \(String(describing: reason))")
 			}
 			
 			Spacer()
 			
 			Button {
 				Task {
+					isLoading = true
+					defer { isLoading = false }
 					let prompt = "Say hi in a fun way."
 					
 					do {
@@ -62,16 +77,16 @@ struct ContentView: View {
 			.buttonStyle(.borderedProminent)
 			.buttonSizing(.flexible)
 			.glassEffect(.regular.interactive())
-        }
-        .padding()
+		}
+		.padding()
 		.tint(.purple)
-    }
+	}
 }
 
 
 // MARK: - preview
 
 #Preview {
-    ContentView()
+	ContentView()
 }
 
